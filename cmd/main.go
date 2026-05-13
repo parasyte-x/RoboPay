@@ -25,8 +25,8 @@ import (
 )
 
 const (
-	ProxyWSURL     = "ws://localhost:8080/api/core/ws/robot"
-	FacilitatorURL = "https://x402.org/facilitator"
+	ProxyWSURL             = "ws://localhost:8080/api/core/ws/robot"
+	FacilitatorURL         = "https://x402.org/facilitator"
 	RobotConfigTopicPrefix = "robot/config/"
 )
 
@@ -35,7 +35,11 @@ func main() {
 	flag.Parse()
 
 	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	defer func() {
+		if err := logger.Sync(); err != nil {
+			logger.Warn("failed to sync logger", zap.Error(err))
+		}
+	}()
 
 	if err := godotenv.Load(); err != nil {
 		logger.Warn("failed to load .env file", zap.Error(err))
@@ -50,7 +54,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("failed to open zenoh session", zap.Error(err))
 	}
-	defer session.Close(nil)
+	defer func() {
+		if err := session.Close(nil); err != nil {
+			logger.Warn("failed to close zenoh session", zap.Error(err))
+		}
+	}()
 
 	restartCh := make(chan struct{}, 1)
 	subTopic := RobotConfigTopicPrefix + cfg.RobotID
@@ -96,7 +104,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("failed to declare config subscriber", zap.Error(err))
 	}
-	defer sub.Undeclare()
+	defer func() {
+		if err := sub.Undeclare(); err != nil {
+			logger.Warn("failed to undeclare zenoh subscriber", zap.Error(err))
+		}
+	}()
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()

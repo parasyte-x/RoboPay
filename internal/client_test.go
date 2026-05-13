@@ -1,93 +1,36 @@
 package internal
 
 import (
+	"context"
 	"testing"
 	"time"
+
+	"go.uber.org/zap"
 )
 
-func TestDemoHandlers(t *testing.T) {
-	router := NewRouter()
-	RegisterDemoHandlers(router)
+func TestDialInvalidBaseURL(t *testing.T) {
+	client := NewClient("://bad-url", "robot-1", nil, zap.NewNop())
 
-	status, headers, body, err := router.Handle("/ping", "GET", nil, nil)
-	if err != nil {
-		t.Fatalf("expected no error for /ping, got %v", err)
-	}
-	if status != 200 {
-		t.Fatalf("expected status 200 for /ping, got %d", status)
-	}
-	if string(body) != "pong" {
-		t.Fatalf("expected body pong for /ping, got %q", string(body))
-	}
-	if headers["content-type"] != "text/plain" {
-		t.Fatalf("expected text/plain header for /ping, got %q", headers["content-type"])
-	}
-
-	payload := []byte("hello")
-	status, headers, body, err = router.Handle("/echo", "POST", nil, payload)
-	if err != nil {
-		t.Fatalf("expected no error for /echo, got %v", err)
-	}
-	if status != 200 {
-		t.Fatalf("expected status 200 for /echo, got %d", status)
-	}
-	if string(body) != "hello" {
-		t.Fatalf("expected echoed body for /echo, got %q", string(body))
-	}
-	if headers["content-type"] != "application/octet-stream" {
-		t.Fatalf("expected application/octet-stream header for /echo, got %q", headers["content-type"])
-	}
-}
-
-func TestUnknownPath(t *testing.T) {
-	router := NewRouter()
-	status, _, _, err := router.Handle("/missing", "GET", nil, nil)
+	_, _, err := client.dial(context.Background())
 	if err == nil {
-		t.Fatal("expected error for unknown route")
-	}
-	if status != 404 {
-		t.Fatalf("expected 404 for unknown route, got %d", status)
+		t.Fatal("expected error for invalid ws base url")
 	}
 }
 
-func TestRouteSpecificMiddleware(t *testing.T) {
-	router := NewRouter()
+func TestSleepWithContextCancelled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
 
-	appendHeader := func(name, value string) Middleware {
-		return func(next Handler) Handler {
-			return func(method string, path string, headers map[string]string, body []byte) (int, map[string]string, []byte) {
-				status, respHeaders, respBody := next(method, path, headers, body)
-				if respHeaders == nil {
-					respHeaders = map[string]string{}
-				}
-				respHeaders[name] = value
-				return status, respHeaders, respBody
-			}
-		}
+	if ok := sleepWithContext(ctx, 500*time.Millisecond); ok {
+		t.Fatal("expected sleepWithContext to return false when context is cancelled")
 	}
+}
 
-	router.Register("GET", "/with-middleware", func(method string, path string, headers map[string]string, body []byte) (int, map[string]string, []byte) {
-		return 200, map[string]string{"content-type": "text/plain"}, []byte("ok")
-	}, appendHeader("x-route-middleware", "enabled"))
+func TestSleepWithContextCompletes(t *testing.T) {
+	ctx := context.Background()
 
-	router.Register("GET", "/without-middleware", func(method string, path string, headers map[string]string, body []byte) (int, map[string]string, []byte) {
-		return 200, map[string]string{"content-type": "text/plain"}, []byte("ok")
-	})
-
-	_, withHeaders, _, err := router.Handle("/with-middleware", "GET", nil, nil)
-	if err != nil {
-		t.Fatalf("expected no error for route with middleware, got %v", err)
-	}
-	if got := withHeaders["x-route-middleware"]; got != "enabled" {
-		t.Fatalf("expected route-specific middleware header, got %q", got)
-	}
-
-	_, withoutHeaders, _, err := router.Handle("/without-middleware", "GET", nil, nil)
-	if err != nil {
-		t.Fatalf("expected no error for route without middleware, got %v", err)
-	}
-	if _, ok := withoutHeaders["x-route-middleware"]; ok {
-		t.Fatal("expected middleware header to be absent on route without middleware")
+	if ok := sleepWithContext(ctx, 5*time.Millisecond); !ok {
+		t.Fatal("expected sleepWithContext to return true when timer completes")
 	}
 }
 
