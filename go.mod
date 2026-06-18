@@ -9,8 +9,16 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/joho/godotenv v1.5.1
+	github.com/unibaseio/aip-go-sdk v0.0.0-20260606174012-cba171499954
 	github.com/x402-foundation/x402/go v0.0.0-20260512144511-7c239c42f5dd
 	go.uber.org/zap v1.28.0
+)
+
+require (
+	github.com/a2aproject/a2a-go v0.3.15 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250715232539-7130f93afb79 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250715232539-7130f93afb79 // indirect
+	google.golang.org/grpc v1.73.0 // indirect
 )
 
 require (
