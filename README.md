@@ -42,7 +42,7 @@ source /opt/ros/humble/setup.bash
 cd isaac_sim && "$ISAACSIM_ROOT/python.sh" run.py --robot_type g1
 ```
 
-Press **▶ Play** in the GUI once the scene finishes loading. The sim subscribes to ROS2 `/cmd_vel` and drives the robot policy from it.
+The sim subscribes to ROS2 `/cmd_vel` and drives the robot policy from it.
 
 ## 2. Start the bridge
 
