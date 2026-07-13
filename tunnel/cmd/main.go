@@ -20,10 +20,10 @@ import (
 	evm "github.com/x402-foundation/x402/go/mechanisms/evm/exact/server"
 	"go.uber.org/zap"
 
-	"github.com/fabricfoundation/robot-tunnel-client/config"
-	"github.com/fabricfoundation/robot-tunnel-client/internal"
-	"github.com/fabricfoundation/robot-tunnel-client/internal/aipagent"
-	"github.com/fabricfoundation/robot-tunnel-client/internal/handlers"
+	"github.com/fabricfoundation/tunnel/config"
+	"github.com/fabricfoundation/tunnel/internal"
+	"github.com/fabricfoundation/tunnel/internal/aipagent"
+	"github.com/fabricfoundation/tunnel/internal/handlers"
 )
 
 const (
