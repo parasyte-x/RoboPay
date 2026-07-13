@@ -9,7 +9,7 @@ import (
 	"github.com/unibaseio/aip-go-sdk/wrappers"
 	"go.uber.org/zap"
 
-	"github.com/fabricfoundation/robot-tunnel-client/config"
+	"github.com/fabricfoundation/tunnel/config"
 )
 
 type PublishFunc func(payload []byte) error

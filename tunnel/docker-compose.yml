@@ -1,10 +1,10 @@
 services:
-  robot-tunnel-client:
+  tunnel:
     build:
       context: .
       dockerfile: Dockerfile
-    image: robot-tunnel-client:latest
-    container_name: robot-tunnel-client
+    image: tunnel:latest
+    container_name: tunnel
     restart: unless-stopped
     environment:
       GIN_MODE: release

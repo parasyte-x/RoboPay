@@ -1,4 +1,4 @@
-module github.com/fabricfoundation/robot-tunnel-client
+module github.com/fabricfoundation/tunnel
 
 go 1.25.0
 
