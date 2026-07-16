@@ -147,12 +147,8 @@ func loadAIPConfig(cfg *Config, defaultChainID int) error {
 		cfg.AIPLocalPort = n
 	}
 
-	if !cfg.AIPEnabled {
-		return nil
-	}
-	if cfg.AIPUserID == "" && cfg.AIPPrivyToken == "" {
-		return fmt.Errorf("UNIBASE_PROXY_AUTH (or AIP_USER_ID) is required when AIP_ENABLED is true")
-	}
+	// No credential check here: when AIP is enabled and no token is set, the
+	// tunnel runs the SDK's interactive authorization flow at startup.
 	return nil
 }
 

@@ -122,7 +122,7 @@ cp tunnel/.env.example tunnel/.env
 |----------------------|----------|----------------------------------------------------------|
 | `AIP_ENABLED`        | yes      | Set `true` to enable BitAgent/AIP registration           |
 | `CHAIN`              | no       | Chain preset: `bsc-testnet`, `bsc-mainnet`, `base-sepolia` or `base-mainnet` — sets both the x402 payment network and the AIP registration chain |
-| `UNIBASE_PROXY_AUTH` | yes*     | Privy bearer token — your account is resolved from it (falls back to `PRIVY_TOKEN`) |
+| `UNIBASE_PROXY_AUTH` | no*      | Bearer token — your account is resolved from it (falls back to `PRIVY_TOKEN`) |
 | `AIP_USER_ID`        | no*      | Token-less fallback: wallet address to register under    |
 | `AIP_ENDPOINT`       | no       | AIP platform URL (default `https://api.aip.unibase.com`) |
 | `GATEWAY_URL`        | no       | AIP gateway URL (default `https://gateway.aip.unibase.com`) |
@@ -130,8 +130,20 @@ cp tunnel/.env.example tunnel/.env
 | `AIP_AGENT_NAME`     | no       | Display name (default `Robot <robot_id>`)                |
 | `AIP_LOCAL_PORT`     | no       | Local port the SDK binds (default `8000`)                |
 
-\* One identity source is required: normally `UNIBASE_PROXY_AUTH` (or
-`PRIVY_TOKEN`); set `AIP_USER_ID` instead only for token-less registration.
+\* When neither is set, the tunnel walks you through a one-time browser
+authorization on first run — open the printed URL, approve with your wallet,
+and paste the token back. It is cached in
+`~/.config/unibase-aip-sdk/config.json` for subsequent runs:
+
+```
+=== Unibase Authorization ===
+[1/3] Fetching authorization URL ...
+[2/3] Open this URL in your browser and approve:
+
+  https://auth.pay.unibase.com?code=<one-time-code>
+
+[3/3] Paste your Authorization token below and press Enter:
+```
 
 Then start the tunnel as usual (`make run`). On success the log shows:
 
