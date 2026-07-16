@@ -15,6 +15,8 @@ const (
 	DefaultProxyWSURL       = "ws://localhost:8080/api/core/ws/robot"
 	DefaultFacilitatorURL   = "https://x402.org/facilitator"
 	DefaultAIPPublicBaseURL = "https://api.fabric.foundation/api/core"
+	DefaultAIPEndpoint      = "https://api.aip.unibase.com"
+	DefaultAIPGatewayURL    = "https://gateway.aip.unibase.com"
 	DefaultAIPChainID       = 97
 	DefaultAIPLocalPort     = 8000
 )
@@ -107,8 +109,8 @@ func loadAIPConfig(cfg *Config) error {
 
 	cfg.AIPUserID = os.Getenv("AIP_USER_ID")
 	cfg.AIPPrivyToken = getEnvOrDefault("UNIBASE_PROXY_AUTH", os.Getenv("PRIVY_TOKEN"))
-	cfg.AIPEndpoint = os.Getenv("AIP_ENDPOINT")
-	cfg.AIPGatewayURL = os.Getenv("GATEWAY_URL")
+	cfg.AIPEndpoint = getEnvOrDefault("AIP_ENDPOINT", DefaultAIPEndpoint)
+	cfg.AIPGatewayURL = getEnvOrDefault("GATEWAY_URL", DefaultAIPGatewayURL)
 	cfg.AIPPublicBaseURL = getEnvOrDefault("AIP_PUBLIC_BASE_URL", DefaultAIPPublicBaseURL)
 	cfg.AIPAgentName = getEnvOrDefault("AIP_AGENT_NAME", "Robot "+cfg.RobotID)
 

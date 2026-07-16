@@ -123,8 +123,8 @@ cp tunnel/.env.example tunnel/.env
 | `AIP_ENABLED`        | yes      | Set `true` to enable BitAgent/AIP registration           |
 | `AIP_USER_ID`        | yes      | Wallet address the agent is registered under             |
 | `UNIBASE_PROXY_AUTH` | yes*     | Privy bearer token (falls back to `PRIVY_TOKEN`)         |
-| `AIP_ENDPOINT`       | yes      | AIP platform URL                                         |
-| `GATEWAY_URL`        | yes      | AIP gateway URL                                          |
+| `AIP_ENDPOINT`       | no       | AIP platform URL (default `https://api.aip.unibase.com`) |
+| `GATEWAY_URL`        | no       | AIP gateway URL (default `https://gateway.aip.unibase.com`) |
 | `AIP_PUBLIC_BASE_URL`| no       | Public gateway base (default `https://api.fabric.foundation/api/core`) |
 | `AIP_AGENT_NAME`     | no       | Display name (default `Robot <robot_id>`)                |
 | `AIP_CHAIN_ID`       | no       | Chain ID (default `97`)                                  |
