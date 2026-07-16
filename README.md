@@ -89,4 +89,54 @@ Common environment overrides:
 | `FACILITATOR_URL` | `https://x402.org/facilitator`                   | x402 payment facilitator endpoint |
 | `GIN_MODE`        | `release`                                        | `debug` for verbose HTTP logs     |
 
-Optional AIP agent registration (Unibase AIP network) is available behind `AIP_ENABLED=true`; see `tunnel/` sources for the full set of `AIP_*` variables.
+## 4. Register the robot on BitAgent (Unibase AIP) — optional
+
+With `AIP_ENABLED=true`, the tunnel additionally registers the robot as an
+A2A-compatible agent on the BitAgent network (Unibase AIP), so any AIP client
+or agent can discover and call it. The integration is built on the
+[Unibase AIP Go SDK](https://github.com/unibaseio/aip-go-sdk) — see
+`tunnel/internal/aipagent/agent.go`, which wraps the robot in a single
+`wrappers.ExposeAsA2A(...)` call.
+
+How AIP traffic flows:
+
+```
+AIP client → AIP gateway (/robots/<robot_id>/…) → Fabric proxy (ws) → tunnel
+           → AIP handler → Zenoh topic robot/tunnel/action → bridge → /cmd_vel
+```
+
+The tunnel serves the A2A contract endpoints (`/.well-known/agent-card.json`,
+`/invoke`, …) on any route not owned by the paid-action API, and the gateway
+proxies them to the robot verbatim.
+
+### Configuration
+
+Copy the example env file and fill in your credentials (the tunnel loads
+`.env` from its working directory on start):
+
+```bash
+cp tunnel/.env.example tunnel/.env
+```
+
+| Variable             | Required | Description                                              |
+|----------------------|----------|----------------------------------------------------------|
+| `AIP_ENABLED`        | yes      | Set `true` to enable BitAgent/AIP registration           |
+| `AIP_USER_ID`        | yes      | Wallet address the agent is registered under             |
+| `UNIBASE_PROXY_AUTH` | yes*     | Privy bearer token (falls back to `PRIVY_TOKEN`)         |
+| `AIP_ENDPOINT`       | yes      | AIP platform URL                                         |
+| `GATEWAY_URL`        | yes      | AIP gateway URL                                          |
+| `AIP_PUBLIC_BASE_URL`| no       | Public gateway base (default `https://api.fabric.foundation/api/core`) |
+| `AIP_AGENT_NAME`     | no       | Display name (default `Robot <robot_id>`)                |
+| `AIP_CHAIN_ID`       | no       | Chain ID (default `97`)                                  |
+| `AIP_LOCAL_PORT`     | no       | Local port the SDK binds (default `8000`)                |
+
+Then start the tunnel as usual (`make run`). On success the log shows:
+
+```
+registering robot as AIP agent  robot_id=<id>  endpoint_url=…/robots/<id>
+ws connected to proxy           robot_id=<id>
+```
+
+Actions received via AIP are published to the same Zenoh topic
+(`robot/tunnel/action`) as paid x402 actions, so the bridge and robot-side
+safety logic are identical for both paths.
